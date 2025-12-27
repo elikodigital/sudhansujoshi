@@ -558,18 +558,17 @@
         {
           name: "LOWER BODY FOCUS",
           sets: 2,
-          betweenSetsRest: 60,
           exercises: [
             { name: "Jump Squats + Inch Worm", duration: 20, rest: 15 },
             { name: "High Knees", duration: 20, rest: 15 },
-            { name: "Pop Squats", duration: 20, rest: 30 },
+            { name: "Pop Squats", duration: 20, rest: 60 },
           ],
         },
         {
           name: "INSANITY SET",
           sets: 2,
           exercises: [
-            { name: "Mountain Climbers", duration: 60, rest: 30 },
+            { name: "Mountain Climbers", duration: 30, rest: 30 },
             { name: "Star Jumps", duration: 20, rest: 15 },
             { name: "Jump Squat Overhead", duration: 20, rest: 15 },
             { name: "Plank Jacks", duration: 30, rest: 15 },
@@ -583,7 +582,7 @@
             { name: "Push Ups", duration: 30, rest: 15 },
             { name: "Shoulder Touch", duration: 30, rest: 15 },
             { name: "Ups and Downs", duration: 30, rest: 15 },
-            { name: "Mountain Climbers (Slow)", duration: 40, rest: 30 },
+            { name: "Mountain Climbers (Slow)", duration: 30, rest: 30 },
           ],
         },
         {
@@ -592,23 +591,23 @@
           exercises: [
             {
               name: "Lunges + Tuck Jumps",
-              duration: 30,
+              duration: 20,
               rest: 0,
               transition: "DON'T STOP!",
             },
             {
               name: "Inch Worm + Push Ups",
-              duration: 30,
+              duration: 20,
               rest: 0,
               transition: "KEEP GOING!",
             },
             {
               name: "Regular Burpees",
-              duration: 30,
+              duration: 20,
               rest: 0,
               transition: "ALMOST THERE!",
             },
-            { name: "Side Hops", duration: 30, rest: 40 },
+            { name: "Side Hops", duration: 20, rest: 40 },
           ],
         },
         {
@@ -907,11 +906,13 @@
       // --- SPECIAL LOGIC ---
 
       function handleProgressiveLogic(elapsed) {
-        // Whistle intervals get shorter
+        // Whistle intervals get shorter - progressively harder at the end
         let interval = 8;
-        if (elapsed > 30) interval = 6;
-        if (elapsed > 60) interval = 4;
+        if (elapsed > 20) interval = 7;
+        if (elapsed > 40) interval = 5;
+        if (elapsed > 70) interval = 4;
         if (elapsed > 90) interval = 3;
+        if (elapsed > 105) interval = 2; // Much harder at the end!
 
         if (state.timeLeft % interval === 0) {
           state.progressiveMove = "GO!";
