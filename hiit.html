@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <title>Tabata Coach</title>
+    <style>
+      :root {
+        --primary: #ff9500; /* Orange start */
+        --primary-end: #ff3b30; /* Red end */
+        --rest: #00c7be; /* Teal */
+        --dark-bg: #000000;
+        --card-bg: #1c1c1e;
+        --text-main: #ffffff;
+        --text-sub: #98989d;
+        --font-main: "SF Pro Display", -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, sans-serif;
+        --gradient-main: linear-gradient(135deg, #ff9500 0%, #ff3b30 100%);
+        --gradient-rest: linear-gradient(135deg, #30b0c7 0%, #00c7be 100%);
+        --glow-work: 0 0 30px rgba(255, 59, 48, 0.3);
+        --glow-rest: 0 0 30px rgba(48, 176, 199, 0.3);
+      }
+
+      * {
+        box-sizing: border-box;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: var(--font-main);
+        background-color: var(--dark-bg);
+        color: var(--text-main);
+        height: 100vh;
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      /* WIP BANNER */
+      .wip-banner {
+        background: #ffd60a;
+        color: #000;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        text-align: center;
+        padding: 4px;
+        letter-spacing: 1px;
+        z-index: 20;
+      }
+
+      /* ANIMATIONS */
+      @keyframes subtleFlow {
+        0% {
+          background-position: 0% 0%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 100%;
+        }
+      }
+
+      .header {
+        padding: 16px;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 10;
+        position: relative;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 800;
+        font-style: italic;
+        letter-spacing: -0.5px;
+        text-transform: uppercase;
+        background: var(--gradient-main);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .header p {
+        margin: 4px 0 0;
+        font-size: 12px;
+        color: var(--text-sub);
+      }
+
+      .main-display {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        position: relative;
+        /* Subtle Violet/Pink Mesh on Black */
+        background-color: #000000;
+        background-image: radial-gradient(
+            at 0% 0%,
+            rgba(124, 58, 237, 0.45) 0px,
+            transparent 60%
+          ),
+          /* Dark Violet */
+            radial-gradient(
+              at 100% 100%,
+              rgba(219, 39, 119, 0.35) 0px,
+              transparent 60%
+            ),
+          /* Dark Pink */
+            radial-gradient(
+              at 50% 50%,
+              rgba(88, 28, 135, 0.2) 0px,
+              transparent 70%
+            ); /* Deep Purple base */
+        background-size: 200% 200%;
+        animation: subtleFlow 8s ease infinite alternate;
+        transition: box-shadow 0.3s var(--ease);
+      }
+
+      .main-display.work {
+        /* Red glow overlay - stronger to contrast with violet */
+        box-shadow: inset 0 0 120px rgba(255, 59, 48, 0.15);
+      }
+      .main-display.rest {
+        /* Teal glow overlay */
+        box-shadow: inset 0 0 120px rgba(48, 176, 199, 0.15);
+      }
+      .phase-badge {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        margin-bottom: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-main);
+        text-transform: uppercase;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      }
+
+      .timer-ring {
+        width: 280px;
+        height: 280px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 32px;
+      }
+
+      /* SVG Circle Progress */
+      .progress-ring__circle {
+        transition: stroke-dashoffset 0.3s linear, stroke 0.5s ease;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+      }
+
+      .timer-content {
+        position: absolute;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .timer-value {
+        font-size: 110px;
+        font-weight: 900;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        font-style: italic;
+        text-shadow: 0 4px 24px rgba(0, 0, 0, 0.8);
+        background: linear-gradient(180deg, #ffffff 0%, #bdbdbd 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .timer-label {
+        font-size: 24px;
+        font-weight: 800;
+        font-style: italic;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-top: 8px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      }
+      .timer-label.work {
+        color: #ff9500;
+      }
+      .timer-label.rest {
+        color: #30b0c7;
+      }
+
+      .exercise-name {
+        font-size: 24px;
+        font-weight: 700;
+        text-align: center;
+        line-height: 1.3;
+        max-width: 90%;
+        margin: 0;
+        min-height: 2.6em; /* Prevent layout shift */
+      }
+
+      .transition-msg {
+        color: #ffd60a;
+        font-weight: 700;
+        font-size: 14px;
+        margin-top: 8px;
+        animation: pulse 1s infinite;
+      }
+
+      /* INFO PANELS - Fixed height to prevent jumps */
+      .info-panel {
+        width: 100%;
+        padding: 0 24px;
+        height: 80px; /* Fixed height reservation */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+
+      .next-up {
+        width: 100%;
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-left: 4px solid var(--border);
+      }
+      .next-up-label {
+        font-size: 11px;
+        color: var(--text-sub);
+        text-transform: uppercase;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .next-up-text {
+        font-size: 15px;
+        font-weight: 500;
+      }
+
+      /* CONTROLS */
+      .controls {
+        padding: 24px 24px 44px 24px; /* Extra bottom padding for iPhone home indicator */
+        display: flex;
+        gap: 16px;
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(10px);
+      }
+
+      .btn {
+        height: 64px;
+        border: none;
+        border-radius: 32px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: transform 0.1s;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .btn:active {
+        transform: scale(0.96);
+      }
+
+      .btn-primary {
+        flex: 2;
+        background: var(--gradient-main);
+        color: white;
+        font-size: 20px;
+        font-style: italic;
+        box-shadow: 0 8px 32px rgba(255, 59, 48, 0.4);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-primary.running {
+        background: #1c1c1e;
+        border: 1px solid #ff3b30;
+        color: #ff3b30;
+        box-shadow: none;
+      }
+
+      .btn-icon {
+        flex: 1;
+        background: var(--card-bg);
+        color: var(--text-main);
+        border: 1px solid var(--border);
+      }
+
+      .btn-icon.active {
+        background: var(--text-main);
+        color: var(--dark-bg);
+        border-color: var(--text-main);
+      }
+
+      /* UTILS */
+      .hidden {
+        display: none !important;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      /* OVERLAYS */
+      .phase-selector {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 100;
+        padding: 24px;
+        overflow-y: auto;
+        transform: translateY(100%);
+        transition: transform 0.3s var(--ease);
+      }
+      .phase-selector.open {
+        transform: translateY(0);
+      }
+
+      .phase-item {
+        display: block;
+        width: 100%;
+        text-align: left;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        padding: 16px;
+        margin-bottom: 12px;
+        border-radius: 12px;
+        color: var(--text-main);
+      }
+      .phase-item h3 {
+        margin: 0 0 4px 0;
+        font-size: 16px;
+      }
+      .phase-item p {
+        margin: 0;
+        font-size: 12px;
+        color: var(--text-sub);
+      }
+      .phase-item.active {
+        border-color: var(--primary);
+        background: rgba(255, 59, 48, 0.1);
+      }
+
+      .close-btn {
+        position: sticky;
+        bottom: 24px;
+        width: 100%;
+        background: var(--text-main);
+        width: 100%;
+        z-index: 1000; /* Ensure it's on top of other content */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wip-banner">
+      🚧 Website In Progress — Meanwhile, Train Hard! 🚧
+    </div>
+
+    <div class="header" id="headerBtn">
+      <h1 id="appTitle">Tabata Coach</h1>
+      <p id="subTitle">Ready to train?</p>
+    </div>
+
+    <div class="main-display" id="mainDisplay">
+      <div class="phase-badge" id="phaseBadge">WARM UP • Set 1/1</div>
+
+      <div class="timer-ring">
+        <svg class="progress-ring" width="280" height="280">
+          <defs>
+            <linearGradient
+              id="gradientWork"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop offset="0%" stop-color="#FF9500" />
+              <stop offset="100%" stop-color="#FF3B30" />
+            </linearGradient>
+            <linearGradient
+              id="gradientRest"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop offset="0%" stop-color="#30B0C7" />
+              <stop offset="100%" stop-color="#00C7BE" />
+            </linearGradient>
+          </defs>
+          <circle
+            class="progress-ring__bg"
+            stroke="rgba(255,255,255,0.1)"
+            stroke-width="12"
+            fill="transparent"
+            r="130"
+            cx="140"
+            cy="140"
+          />
+          <circle
+            class="progress-ring__circle"
+            id="progressCircle"
+            stroke="url(#gradientWork)"
+            stroke-width="12"
+            stroke-linecap="round"
+            fill="transparent"
+            r="130"
+            cx="140"
+            cy="140"
+            style="filter: drop-shadow(0 0 10px rgba(255, 149, 0, 0.5))"
+          />
+        </svg>
+        <div class="timer-content">
+          <div class="timer-value" id="timerValue">00</div>
+          <div class="timer-label" id="timerLabel">READY</div>
+        </div>
+      </div>
+
+      <h2 class="exercise-name" id="exerciseName">Tap Start to Begin</h2>
+      <div class="transition-msg hidden" id="transitionMsg"></div>
+    </div>
+
+    <div class="info-panel">
+      <div class="next-up hidden" id="nextUpCard">
+        <div>
+          <div class="next-up-label">Next Up</div>
+          <div class="next-up-text" id="nextUpText">Jumping Jacks</div>
+        </div>
+        <div
+          class="next-up-text"
+          style="color: var(--text-sub)"
+          id="nextUpTime"
+        >
+          40s
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-icon" id="resetBtn" aria-label="Reset">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74-2.74L3 12" />
+        </svg>
+      </button>
+
+      <button class="btn btn-primary" id="startBtn">START</button>
+
+      <button class="btn btn-icon" id="skipBtn" aria-label="Skip Next">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <polygon points="5 4 15 12 5 20 5 4" />
+          <line x1="19" y1="5" x2="19" y2="19" />
+        </svg>
+      </button>
+
+      <button class="btn btn-icon" id="soundBtn" aria-label="Toggle Sound">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path
+            d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"
+          ></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Phase Selector Overlay -->
+    <div class="phase-selector" id="phaseSelector">
+      <h2 style="margin-top: 0">Jump to Phase</h2>
+      <div id="phaseList"></div>
+      <button
+        class="btn close-btn"
+        onclick="document.getElementById('phaseSelector').classList.remove('open')"
+      >
+        Close
+      </button>
+    </div>
+
+    <script>
+      /**
+       * TABATA TIMER - MOBILE FIRST
+       * Converted from React to Vanilla JS
+       */
+
+      // --- DATA ---
+      const workoutPhases = [
+        {
+          name: "WARMUP - Dynamic",
+          sets: 1,
+          exercises: [
+            { name: "Jumping Jacks", duration: 40, rest: 10 },
+            { name: "Seal Jacks", duration: 40, rest: 10 },
+            { name: "Butt Kicks", duration: 30, rest: 15 },
+            { name: "Side Hops", duration: 30, rest: 15 },
+            { name: "Pogo Jumps", duration: 30, rest: 60 },
+          ],
+        },
+        {
+          name: "LOWER BODY FOCUS",
+          sets: 2,
+          betweenSetsRest: 60,
+          exercises: [
+            { name: "Jump Squats + Inch Worm", duration: 20, rest: 15 },
+            { name: "High Knees", duration: 20, rest: 15 },
+            { name: "Pop Squats", duration: 20, rest: 30 },
+          ],
+        },
+        {
+          name: "INSANITY SET",
+          sets: 2,
+          exercises: [
+            { name: "Mountain Climbers", duration: 60, rest: 30 },
+            { name: "Star Jumps", duration: 20, rest: 15 },
+            { name: "Jump Squat Overhead", duration: 20, rest: 15 },
+            { name: "Plank Jacks", duration: 30, rest: 15 },
+            { name: "Up and Down", duration: 30, rest: 30 },
+          ],
+        },
+        {
+          name: "UPPER BODY TIME",
+          sets: 2,
+          exercises: [
+            { name: "Push Ups", duration: 30, rest: 15 },
+            { name: "Shoulder Touch", duration: 30, rest: 15 },
+            { name: "Ups and Downs", duration: 30, rest: 15 },
+            { name: "Mountain Climbers (Slow)", duration: 40, rest: 30 },
+          ],
+        },
+        {
+          name: "FULL BODY BURST",
+          sets: 2,
+          exercises: [
+            {
+              name: "Lunges + Tuck Jumps",
+              duration: 30,
+              rest: 0,
+              transition: "DON'T STOP!",
+            },
+            {
+              name: "Inch Worm + Push Ups",
+              duration: 30,
+              rest: 0,
+              transition: "KEEP GOING!",
+            },
+            {
+              name: "Regular Burpees",
+              duration: 30,
+              rest: 0,
+              transition: "ALMOST THERE!",
+            },
+            { name: "Side Hops", duration: 30, rest: 40 },
+          ],
+        },
+        {
+          name: "PROGRESSION TRAINING",
+          sets: 1,
+          isProgressive: true,
+          exercises: [{ name: "Progressive Burpees", duration: 120, rest: 0 }],
+        },
+        {
+          name: "FUNCTIONAL TRAINING",
+          sets: 1,
+          isFunctional: true,
+          exercises: [
+            { name: "Functional Set 1", duration: 40, rest: 15 },
+            { name: "Functional Set 2", duration: 40, rest: 15 },
+            { name: "Functional Set 3", duration: 40, rest: 15 },
+            { name: "Functional Set 4", duration: 40, rest: 60 },
+          ],
+        },
+        {
+          name: "CORE STABILITY",
+          sets: 1,
+          exercises: [
+            { name: "Bear Crawl", duration: 40, rest: 0 },
+            { name: "Superman Hold", duration: 40, rest: 0 },
+            { name: "Hollow Body Hold", duration: 40, rest: 0 },
+          ],
+        },
+        {
+          name: "COOLDOWN",
+          sets: 1,
+          exercises: [
+            { name: "Hamstring Stretch", duration: 30, rest: 0 },
+            { name: "Quad Stretch (L)", duration: 30, rest: 0 },
+            { name: "Quad Stretch (R)", duration: 30, rest: 0 },
+            { name: "Child Pose", duration: 60, rest: 0 },
+          ],
+        },
+      ];
+
+      // --- APP STATE ---
+      const state = {
+        currentPhase: 0,
+        currentSet: 1,
+        currentExercise: 0,
+        timeLeft: 0,
+        totalTime: 0, // For progress ring
+        isRunning: false,
+        isRest: false,
+        soundEnabled: true,
+        progressiveMove: "",
+        functionalMove: "Ready Position",
+        functionalPool: [],
+        functionalHistory: [],
+      };
+
+      let timerInterval = null;
+      let audioContext = null;
+
+      // --- DOM ELEMENTS ---
+      const els = {
+        timerValue: document.getElementById("timerValue"),
+        timerLabel: document.getElementById("timerLabel"),
+        exerciseName: document.getElementById("exerciseName"),
+        phaseBadge: document.getElementById("phaseBadge"),
+        progressCircle: document.getElementById("progressCircle"),
+        mainDisplay: document.getElementById("mainDisplay"),
+        startBtn: document.getElementById("startBtn"),
+        resetBtn: document.getElementById("resetBtn"),
+        skipBtn: document.getElementById("skipBtn"),
+        soundBtn: document.getElementById("soundBtn"),
+        nextUpCard: document.getElementById("nextUpCard"),
+        nextUpText: document.getElementById("nextUpText"),
+        nextUpTime: document.getElementById("nextUpTime"),
+        transitionMsg: document.getElementById("transitionMsg"),
+        phaseSelector: document.getElementById("phaseSelector"),
+        phaseList: document.getElementById("phaseList"),
+        headerBtn: document.getElementById("headerBtn"),
+        appTitle: document.getElementById("appTitle"),
+        subTitle: document.getElementById("subTitle"),
+      };
+
+      // --- INITIALIZATION ---
+      function init() {
+        setupPhaseList();
+        render();
+
+        // Circle math
+        const radius = els.progressCircle.r.baseVal.value;
+        const circumference = radius * 2 * Math.PI;
+        els.progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+        els.progressCircle.style.strokeDashoffset = 0;
+        state.circumference = circumference;
+
+        // Listeners
+        els.startBtn.addEventListener("click", toggleTimer);
+        els.resetBtn.addEventListener("click", resetWorkout);
+        els.skipBtn.addEventListener("click", skipNext);
+        els.soundBtn.addEventListener("click", toggleSound);
+        els.headerBtn.addEventListener("click", () =>
+          els.phaseSelector.classList.add("open")
+        );
+      }
+
+      // --- CORE LOGIC ---
+
+      function toggleTimer() {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext ||
+            window.webkitAudioContext)();
+        }
+
+        if (state.isRunning) {
+          pauseTimer();
+        } else {
+          startTimer();
+        }
+      }
+
+      function startTimer() {
+        if (state.timeLeft === 0) {
+          // Initial start or start of new segment check
+          const phase = workoutPhases[state.currentPhase];
+          if (!phase) return;
+
+          // If 0, likely uninitialized, set to first exercise
+          state.timeLeft = phase.exercises[state.currentExercise].duration;
+          state.totalTime = state.timeLeft;
+        }
+
+        state.isRunning = true;
+        render();
+        speak(getDisplayExerciseName(), 1.2, true); // Announce start
+
+        if (audioContext && audioContext.state === "suspended") {
+          audioContext.resume();
+        }
+
+        timerInterval = setInterval(tick, 1000);
+      }
+
+      function skipNext() {
+        // If not running, skipping might be weird, but let's allow it to just jump state
+        handleSegmentComplete();
+        render();
+      }
+
+      function pauseTimer() {
+        state.isRunning = false;
+        clearInterval(timerInterval);
+        render();
+      }
+
+      function resetWorkout() {
+        pauseTimer();
+        state.currentPhase = 0;
+        state.currentSet = 1;
+        state.currentExercise = 0;
+        state.isRest = false;
+        state.timeLeft = workoutPhases[0].exercises[0].duration;
+        state.totalTime = state.timeLeft;
+        state.progressiveMove = "";
+        state.functionalMove = "Ready Position";
+        state.functionalHistory = [];
+        render();
+      }
+
+      function tick() {
+        if (state.timeLeft <= 1) {
+          handleSegmentComplete();
+          return;
+        }
+
+        state.timeLeft--;
+
+        // Special Logic Checks
+        const phase = workoutPhases[state.currentPhase];
+        if (phase.isProgressive && !state.isRest)
+          handleProgressiveLogic(120 - state.timeLeft);
+        if (phase.isFunctional && !state.isRest)
+          handleFunctionalLogic(40 - state.timeLeft);
+
+        // Audio cues
+        if (state.timeLeft <= 3 && state.timeLeft > 0) {
+          playBeep(600, 0.1);
+          if (state.timeLeft <= 3) speak(String(state.timeLeft));
+        }
+
+        render();
+      }
+
+      function handleSegmentComplete() {
+        const phase = workoutPhases[state.currentPhase];
+        const exercise = phase.exercises[state.currentExercise];
+
+        if (state.isRest) {
+          // End of Rest -> Start Work
+          state.isRest = false;
+          const nextIdx = state.currentExercise + 1;
+
+          if (nextIdx >= phase.exercises.length) {
+            // Set Complete
+            if (state.currentSet < phase.sets) {
+              state.currentSet++;
+              state.currentExercise = 0;
+
+              if (phase.betweenSetsRest) {
+                startRest(phase.betweenSetsRest, "Rest between sets");
+              } else {
+                startWork(phase.exercises[0]);
+              }
+            } else {
+              // Phase Complete
+              nextPhase();
+            }
+          } else {
+            // Next Exercise in Same Set
+            state.currentExercise = nextIdx;
+            startWork(phase.exercises[nextIdx]);
+          }
+        } else {
+          // End of Work -> Start Rest
+          if (exercise.rest > 0) {
+            startRest(exercise.rest);
+          } else {
+            // No rest, go immediate to next
+            const nextIdx = state.currentExercise + 1;
+
+            if (nextIdx >= phase.exercises.length) {
+              // End of phase/set exercises with no rest last
+              if (state.currentSet < phase.sets) {
+                state.currentSet++;
+                state.currentExercise = 0;
+                if (phase.betweenSetsRest) {
+                  startRest(phase.betweenSetsRest, "Big Rest!");
+                } else {
+                  startWork(phase.exercises[0]);
+                }
+              } else {
+                nextPhase();
+              }
+            } else {
+              state.currentExercise = nextIdx;
+              startWork(phase.exercises[nextIdx]);
+            }
+          }
+        }
+      }
+
+      function startWork(exercise) {
+        state.timeLeft = exercise.duration;
+        state.totalTime = exercise.duration;
+
+        // Reset special states
+        state.functionalMove = "Ready Position";
+        speak(exercise.name + ". Go!", 1.2);
+        playBeep(1000, 0.4);
+        render();
+      }
+
+      function startRest(duration, msg) {
+        state.isRest = true;
+        state.timeLeft = duration;
+        state.totalTime = duration;
+        speak(msg || "Rest. Breathe.", 1.1);
+        render();
+      }
+
+      function nextPhase() {
+        const nextP = state.currentPhase + 1;
+        if (nextP < workoutPhases.length) {
+          // Move to next phase
+          state.currentPhase = nextP;
+          state.currentSet = 1;
+          state.currentExercise = 0;
+
+          const phase = workoutPhases[nextP];
+          state.timeLeft = phase.exercises[0].duration;
+          state.totalTime = state.timeLeft;
+          state.isRest = false;
+
+          playBeep(1200, 0.6);
+          speak(`Starting ${phase.name}`, 1.1);
+          render();
+        } else {
+          // Workout Complete
+          pauseTimer();
+          state.timeLeft = 0;
+          els.timerLabel.innerText = "DONE";
+          els.exerciseName.innerText = "WORKOUT COMPLETE!";
+          playWhistle();
+          speak("Workout Complete! You are amazing!", 1);
+        }
+      }
+
+      // --- SPECIAL LOGIC ---
+
+      function handleProgressiveLogic(elapsed) {
+        // Whistle intervals get shorter
+        let interval = 8;
+        if (elapsed > 30) interval = 6;
+        if (elapsed > 60) interval = 4;
+        if (elapsed > 90) interval = 3;
+
+        if (state.timeLeft % interval === 0) {
+          state.progressiveMove = "GO!";
+          playWhistle();
+          setTimeout(() => {
+            state.progressiveMove = "HOLD";
+            render();
+          }, 800);
+          render();
+        }
+      }
+
+      function handleFunctionalLogic(elapsed) {
+        // Functional training logic ported
+        if (elapsed === 0) {
+          speak("Ready position", 1.2);
+          return;
+        }
+
+        // Mock complexity for JS simplicity: just pick random every 6s
+        if (state.timeLeft % 6 === 0) {
+          const moves = ["Burpees", "Left Touch", "Right Touch", "Tuck Jump"];
+          const move = moves[Math.floor(Math.random() * moves.length)];
+          state.functionalMove = move;
+          playWhistle();
+          speak(move, 1.4);
+          render();
+        }
+      }
+
+      // --- AUDIO ---
+
+      function speak(text, rate = 1.0, force = false) {
+        if (!state.soundEnabled || !window.speechSynthesis) return;
+        if (!force && state.timeLeft > 5 && state.isRunning) {
+          // limit chatter
+        }
+
+        // Cancel current if overlapping
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = rate;
+        u.lang = "en-US";
+        window.speechSynthesis.speak(u);
+      }
+
+      function playBeep(freq, dur) {
+        if (!state.soundEnabled || !audioContext) return;
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+          0.01,
+          audioContext.currentTime + dur
+        );
+        osc.start();
+        osc.stop(audioContext.currentTime + dur);
+      }
+
+      function playWhistle() {
+        playBeep(2000, 0.3);
+      }
+
+      function toggleSound() {
+        state.soundEnabled = !state.soundEnabled;
+        render();
+      }
+
+      // --- RENDER ---
+
+      function getDisplayExerciseName() {
+        const phase = workoutPhases[state.currentPhase];
+        if (phase.isProgressive && !state.isRest)
+          return state.progressiveMove || "Get Ready";
+        if (phase.isFunctional && !state.isRest) return state.functionalMove;
+        return phase.exercises[state.currentExercise].name;
+      }
+
+      function render() {
+        // 1. Text & Timer
+        els.timerValue.innerText = state.timeLeft;
+
+        // 2. Main Labels
+        if (
+          !state.isRunning &&
+          state.timeLeft === state.totalTime &&
+          state.currentPhase === 0
+        ) {
+          els.timerLabel.innerText = "READY";
+          els.exerciseName.innerText = "Tap Start";
+        } else if (state.isRest) {
+          els.timerLabel.innerText = "REST";
+          els.timerLabel.className = "timer-label rest";
+          els.exerciseName.innerText = "Recover";
+          els.mainDisplay.className = "main-display rest";
+          els.progressCircle.style.stroke = "url(#gradientRest)";
+          els.progressCircle.style.filter =
+            "drop-shadow(0 0 10px rgba(48, 176, 199, 0.5))";
+        } else {
+          els.timerLabel.innerText = "WORK";
+          els.timerLabel.className = "timer-label work";
+          els.exerciseName.innerText = getDisplayExerciseName();
+          els.mainDisplay.className = "main-display work";
+          els.progressCircle.style.stroke = "url(#gradientWork)";
+          els.progressCircle.style.filter =
+            "drop-shadow(0 0 10px rgba(255, 149, 0, 0.5))";
+        }
+        // 3. Phase Badge
+        const phase = workoutPhases[state.currentPhase];
+        if (phase) {
+          els.phaseBadge.innerText = `${phase.name} • ${
+            phase.isFunctional ? "Random" : "Set"
+          } ${state.currentSet}/${phase.sets}`;
+          els.appTitle.innerText = `${state.currentPhase + 1}. ${phase.name}`;
+        }
+
+        // 4. Progress Ring
+        const offset =
+          state.circumference -
+          (state.timeLeft / state.totalTime) * state.circumference;
+        els.progressCircle.style.strokeDashoffset = offset;
+
+        // 5. Buttons
+        if (state.isRunning) {
+          els.startBtn.innerText = "PAUSE";
+          els.startBtn.classList.add("running");
+          els.startBtn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="20"/><line x1="14" y1="4" x2="14" y2="20"/></svg> PAUSE`;
+        } else {
+          els.startBtn.innerText = "START";
+          els.startBtn.classList.remove("running");
+          els.startBtn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg> START`;
+        }
+
+        els.soundBtn.className = `btn btn-icon ${
+          state.soundEnabled ? "active" : ""
+        }`;
+        els.soundBtn.innerHTML = state.soundEnabled
+          ? `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`
+          : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`;
+
+        // 6. Next Up Info
+        // Always try to find next exercise to keep layout stable
+        let nextName = "";
+        let nextDur = "";
+
+        if (!phase.isProgressive && !phase.isFunctional) {
+          const nextIdx = state.isRest
+            ? state.currentExercise
+            : state.currentExercise + 1;
+
+          // If we are working, next is +1. If we are resting, next is current (because we haven't started it yet? No wait.)
+          // Logic check:
+          // If isRest is true, we are in the "Rest" period BEFORE the currentExercise?
+          // No, usually rest comes AFTER or BEFORE?
+          // In my logic: handleSegmentComplete() ->
+          //   End of Work -> Start Rest (if exercise.rest > 0).
+          //   So we are resting AFTER the work we just did?
+          //   Wait. "Rest between sets" is clear.
+          //   But `state.currentExercise` updates BEFORE rest or AFTER rest?
+
+          // Let's trace handleSegmentComplete:
+          // if (state.isRest) { setIsRest(false); ... if next in set, currentExercise = nextIdx; startWork(...) }
+          // else { ... startRest(...) }
+          // So when Resting, `state.currentExercise` is still the ONE WE JUST DID.
+          // So the "Next" one is `state.currentExercise + 1`.
+
+          const upcomingIdx = state.currentExercise + 1;
+
+          if (upcomingIdx < phase.exercises.length) {
+            nextName = phase.exercises[upcomingIdx].name;
+            nextDur = phase.exercises[upcomingIdx].duration + "s";
+          } else if (state.currentSet < phase.sets) {
+            // Next is Set X Exercise 0
+            nextName = phase.exercises[0].name;
+            nextDur = phase.exercises[0].duration + "s";
+          }
+        }
+
+        if (nextName) {
+          els.nextUpCard.classList.remove("hidden");
+          els.nextUpText.innerText = nextName;
+          els.nextUpTime.innerText = nextDur;
+          els.nextUpCard.style.visibility = "visible";
+        } else {
+          // Keep the card layout but invisible to prevent jump, or just hide if we really want
+          // But checking user complaint "not properly aligned", jumps are the main culprit.
+          // Let's hide it but keep height via .info-panel fixed height
+          els.nextUpCard.classList.add("hidden");
+        }
+
+        // 7. Transition Message
+        if (
+          phase.exercises[state.currentExercise].transition &&
+          !state.isRest
+        ) {
+          els.transitionMsg.classList.remove("hidden");
+          els.transitionMsg.innerText =
+            phase.exercises[state.currentExercise].transition;
+        } else {
+          els.transitionMsg.classList.add("hidden");
+        }
+      }
+
+      // --- UTILS ---
+      function setupPhaseList() {
+        const list = document.getElementById("phaseList");
+        workoutPhases.forEach((p, idx) => {
+          const btn = document.createElement("div");
+          btn.className = "phase-item";
+          btn.innerHTML = `<h3>${idx + 1}. ${p.name}</h3><p>${
+            p.exercises.length
+          } Exercises • ${p.sets} Set(s)</p>`;
+          btn.onclick = () => jumpToPhase(idx);
+          list.appendChild(btn);
+        });
+      }
+
+      function jumpToPhase(idx) {
+        pauseTimer();
+        state.currentPhase = idx;
+        state.currentSet = 1;
+        state.currentExercise = 0;
+        state.timeLeft = workoutPhases[idx].exercises[0].duration;
+        state.totalTime = state.timeLeft;
+        state.isRest = false;
+        els.phaseSelector.classList.remove("open");
+        render();
+      }
+
+      // Start
+      init();
+    </script>
+  </body>
+</html>
