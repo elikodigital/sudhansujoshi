@@ -6,28 +6,48 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#1a1a2e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
+    <meta name="apple-mobile-web-app-title" content="Tabata Coach" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta
+      name="description"
+      content="Professional HIIT Timer with Audio Guidance"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23ff6b35' width='100' height='100' rx='20'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white' font-weight='bold'>T</text></svg>"
+    />
     <title>Tabata Coach</title>
     <style>
       :root {
-        --primary: #ff9500; /* Orange start */
-        --primary-end: #ff3b30; /* Red end */
-        --rest: #00c7be; /* Teal */
-        --dark-bg: #000000;
-        --card-bg: #1c1c1e;
-        --text-main: #ffffff;
-        --text-sub: #98989d;
+        /* Dark Neumorphic Theme - Orange */
+        --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        --surface: rgba(255, 255, 255, 0.05);
+        --surface-light: rgba(255, 255, 255, 0.08);
+        --primary: #ff6b35;
+        --primary-light: #ff8c5a;
+        --rest: #f77f00;
+        --rest-light: #ffa94d;
+        --text-main: #e8e8e8;
+        --text-sub: rgba(232, 232, 232, 0.6);
+        --text-dark: #2d3748;
         --font-main: "SF Pro Display", -apple-system, BlinkMacSystemFont,
           "Segoe UI", Roboto, sans-serif;
-        --gradient-main: linear-gradient(135deg, #ff9500 0%, #ff3b30 100%);
-        --gradient-rest: linear-gradient(135deg, #30b0c7 0%, #00c7be 100%);
-        --glow-work: 0 0 30px rgba(255, 59, 48, 0.3);
-        --glow-rest: 0 0 30px rgba(48, 176, 199, 0.3);
+
+        /* Dark Neumorphic Shadows */
+        --shadow-light: -6px -6px 12px rgba(255, 255, 255, 0.03);
+        --shadow-dark: 6px 6px 12px rgba(0, 0, 0, 0.5);
+        --shadow-inset-light: inset -4px -4px 8px rgba(255, 255, 255, 0.02);
+        --shadow-inset-dark: inset 4px 4px 8px rgba(0, 0, 0, 0.6);
+
+        /* Gradients */
+        --gradient-work: linear-gradient(135deg, #ff6b35 0%, #ff8c5a 100%);
+        --gradient-rest: linear-gradient(135deg, #f77f00 0%, #ffa94d 100%);
       }
 
       * {
@@ -40,13 +60,16 @@
         margin: 0;
         padding: 0;
         font-family: var(--font-main);
-        background-color: var(--dark-bg);
+        background: var(--bg-gradient);
         color: var(--text-main);
         height: 100vh;
         height: 100dvh;
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        /* Prevent scroll bounce on iOS */
+        overscroll-behavior: none;
+        -webkit-overflow-scrolling: touch;
       }
 
       /* WIP BANNER */
@@ -78,26 +101,25 @@
       .header {
         padding: 16px;
         text-align: center;
-        background: rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(20px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--surface);
+        border-bottom: none;
         z-index: 10;
         position: relative;
+        box-shadow: var(--shadow-dark);
       }
       .header h1 {
         margin: 0;
-        font-size: 20px;
+        font-size: 16px;
         font-weight: 800;
         font-style: italic;
         letter-spacing: -0.5px;
         text-transform: uppercase;
-        background: var(--gradient-main);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: var(--text-main);
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
       }
       .header p {
         margin: 4px 0 0;
-        font-size: 12px;
+        font-size: 11px;
         color: var(--text-sub);
       }
 
@@ -107,63 +129,36 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 24px;
+        padding: 16px;
         position: relative;
-        /* Subtle Violet/Pink Mesh on Black */
-        background-color: #000000;
-        background-image: radial-gradient(
-            at 0% 0%,
-            rgba(124, 58, 237, 0.45) 0px,
-            transparent 60%
-          ),
-          /* Dark Violet */
-            radial-gradient(
-              at 100% 100%,
-              rgba(219, 39, 119, 0.35) 0px,
-              transparent 60%
-            ),
-          /* Dark Pink */
-            radial-gradient(
-              at 50% 50%,
-              rgba(88, 28, 135, 0.2) 0px,
-              transparent 70%
-            ); /* Deep Purple base */
-        background-size: 200% 200%;
-        animation: subtleFlow 8s ease infinite alternate;
-        transition: box-shadow 0.3s var(--ease);
-      }
-
-      .main-display.work {
-        /* Red glow overlay - stronger to contrast with violet */
-        box-shadow: inset 0 0 120px rgba(255, 59, 48, 0.15);
-      }
-      .main-display.rest {
-        /* Teal glow overlay */
-        box-shadow: inset 0 0 120px rgba(48, 176, 199, 0.15);
+        background: transparent;
+        transition: all 0.3s ease;
       }
       .phase-badge {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        padding: 8px 16px;
+        background: var(--surface);
+        padding: 6px 12px;
         border-radius: 20px;
-        font-size: 14px;
+        font-size: 11px;
         font-weight: 700;
         letter-spacing: 0.5px;
-        margin-bottom: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 16px;
+        border: none;
         color: var(--text-main);
         text-transform: uppercase;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        box-shadow: var(--shadow-light), var(--shadow-dark);
       }
 
       .timer-ring {
-        width: 280px;
-        height: 280px;
+        width: 220px;
+        height: 220px;
         position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 32px;
+        margin-bottom: 20px;
+        border-radius: 50%;
+        background: var(--surface);
+        box-shadow: var(--shadow-inset-light), var(--shadow-inset-dark);
       }
 
       /* SVG Circle Progress */
@@ -182,35 +177,33 @@
       }
 
       .timer-value {
-        font-size: 110px;
+        font-size: 72px;
         font-weight: 900;
         line-height: 1;
         font-variant-numeric: tabular-nums;
         font-style: italic;
-        text-shadow: 0 4px 24px rgba(0, 0, 0, 0.8);
-        background: linear-gradient(180deg, #ffffff 0%, #bdbdbd 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: var(--text-main);
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
       }
 
       .timer-label {
-        font-size: 24px;
+        font-size: 16px;
         font-weight: 800;
         font-style: italic;
         text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-top: 8px;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        letter-spacing: 1.5px;
+        margin-top: 6px;
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
       }
       .timer-label.work {
-        color: #ff9500;
+        color: var(--primary-light);
       }
       .timer-label.rest {
-        color: #30b0c7;
+        color: var(--rest-light);
       }
 
       .exercise-name {
-        font-size: 24px;
+        font-size: 18px;
         font-weight: 700;
         text-align: center;
         line-height: 1.3;
@@ -222,7 +215,7 @@
       .transition-msg {
         color: #ffd60a;
         font-weight: 700;
-        font-size: 14px;
+        font-size: 12px;
         margin-top: 8px;
         animation: pulse 1s infinite;
       }
@@ -230,8 +223,8 @@
       /* INFO PANELS - Fixed height to prevent jumps */
       .info-panel {
         width: 100%;
-        padding: 0 24px;
-        height: 80px; /* Fixed height reservation */
+        padding: 0 16px;
+        height: 70px; /* Fixed height reservation */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -241,84 +234,108 @@
 
       .next-up {
         width: 100%;
-        background: var(--card-bg);
-        border-radius: 12px;
+        background: var(--surface);
+        border-radius: 16px;
         padding: 12px 16px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-left: 4px solid var(--border);
+        border: none;
+        box-shadow: var(--shadow-light), var(--shadow-dark);
       }
       .next-up-label {
-        font-size: 11px;
+        font-size: 10px;
         color: var(--text-sub);
         text-transform: uppercase;
         font-weight: 700;
         margin-bottom: 4px;
       }
       .next-up-text {
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 500;
       }
 
       /* CONTROLS */
       .controls {
-        padding: 24px 24px 44px 24px; /* Extra bottom padding for iPhone home indicator */
+        padding: 16px 16px 40px 16px; /* Extra bottom padding for iPhone home indicator */
         display: flex;
-        gap: 16px;
-        background: rgba(0, 0, 0, 0.9);
-        backdrop-filter: blur(10px);
+        gap: 12px;
+        background: var(--surface);
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
       }
 
       .btn {
-        height: 64px;
+        height: 56px;
         border: none;
-        border-radius: 32px;
-        font-size: 16px;
+        border-radius: 28px;
+        font-size: 14px;
         font-weight: 700;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        transition: transform 0.1s;
+        gap: 6px;
+        transition: all 0.2s ease;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        position: relative;
       }
 
       .btn:active {
-        transform: scale(0.96);
+        transform: translateY(3px);
+        box-shadow: var(--shadow-inset-light), var(--shadow-inset-dark);
       }
 
+      /* NEUMORPHIC PRIMARY BUTTON */
       .btn-primary {
         flex: 2;
-        background: var(--gradient-main);
+        background: var(--gradient-work);
         color: white;
-        font-size: 20px;
+        font-size: 16px;
         font-style: italic;
-        box-shadow: 0 8px 32px rgba(255, 59, 48, 0.4);
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: var(--shadow-light), var(--shadow-dark);
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-primary:active {
+        box-shadow: var(--shadow-inset-light), var(--shadow-inset-dark);
       }
 
       .btn-primary.running {
-        background: #1c1c1e;
-        border: 1px solid #ff3b30;
-        color: #ff3b30;
-        box-shadow: none;
+        background: var(--surface-light);
+        color: var(--primary);
+        box-shadow: var(--shadow-inset-light), var(--shadow-inset-dark);
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        /* Keep button pressed down while running */
+        transform: translateY(3px);
       }
 
+      .btn-primary.running:active {
+        /* Even more pressed when clicking while running */
+        transform: translateY(4px);
+        box-shadow: var(--shadow-inset-light), var(--shadow-inset-dark);
+      }
+
+      /* NEUMORPHIC ICON BUTTONS */
       .btn-icon {
         flex: 1;
-        background: var(--card-bg);
+        background: var(--surface);
         color: var(--text-main);
-        border: 1px solid var(--border);
+        box-shadow: var(--shadow-light), var(--shadow-dark);
+      }
+
+      .btn-icon:active {
+        box-shadow: var(--shadow-inset-light), var(--shadow-inset-dark);
       }
 
       .btn-icon.active {
-        background: var(--text-main);
-        color: var(--dark-bg);
-        border-color: var(--text-main);
+        background: var(--surface-light);
+        color: var(--text-main);
+        box-shadow: var(--shadow-inset-light), var(--shadow-inset-dark);
+      }
+
+      .btn-icon.active:active {
+        box-shadow: var(--shadow-inset-dark), var(--shadow-inset-light);
       }
 
       /* UTILS */
@@ -345,12 +362,16 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.95);
+        background: linear-gradient(
+          135deg,
+          rgba(26, 26, 46, 0.98) 0%,
+          rgba(22, 33, 62, 0.98) 100%
+        );
         z-index: 100;
         padding: 24px;
         overflow-y: auto;
         transform: translateY(100%);
-        transition: transform 0.3s var(--ease);
+        transition: transform 0.3s ease;
       }
       .phase-selector.open {
         transform: translateY(0);
@@ -360,12 +381,18 @@
         display: block;
         width: 100%;
         text-align: left;
-        background: var(--card-bg);
-        border: 1px solid var(--border);
+        background: var(--surface);
+        border: none;
         padding: 16px;
         margin-bottom: 12px;
-        border-radius: 12px;
+        border-radius: 16px;
         color: var(--text-main);
+        box-shadow: var(--shadow-light), var(--shadow-dark);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .phase-item:active {
+        box-shadow: var(--shadow-inset-light), var(--shadow-inset-dark);
       }
       .phase-item h3 {
         margin: 0 0 4px 0;
@@ -377,18 +404,25 @@
         color: var(--text-sub);
       }
       .phase-item.active {
-        border-color: var(--primary);
-        background: rgba(255, 59, 48, 0.1);
+        background: var(--surface-light);
+        box-shadow: var(--shadow-inset-light), var(--shadow-inset-dark);
       }
 
       .close-btn {
         position: sticky;
         bottom: 24px;
         width: 100%;
-        background: var(--text-main);
+        background: var(--gradient-work);
+        color: white;
         width: 100%;
         z-index: 1000; /* Ensure it's on top of other content */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--shadow-light), var(--shadow-dark);
+        height: 56px;
+        border-radius: 28px;
+        font-size: 16px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
       }
     </style>
   </head>
@@ -406,7 +440,7 @@
       <div class="phase-badge" id="phaseBadge">WARM UP • Set 1/1</div>
 
       <div class="timer-ring">
-        <svg class="progress-ring" width="280" height="280">
+        <svg class="progress-ring" width="220" height="220">
           <defs>
             <linearGradient
               id="gradientWork"
@@ -415,8 +449,8 @@
               x2="100%"
               y2="100%"
             >
-              <stop offset="0%" stop-color="#FF9500" />
-              <stop offset="100%" stop-color="#FF3B30" />
+              <stop offset="0%" stop-color="#ff6b35" />
+              <stop offset="100%" stop-color="#ff8c5a" />
             </linearGradient>
             <linearGradient
               id="gradientRest"
@@ -425,30 +459,30 @@
               x2="100%"
               y2="100%"
             >
-              <stop offset="0%" stop-color="#30B0C7" />
-              <stop offset="100%" stop-color="#00C7BE" />
+              <stop offset="0%" stop-color="#f77f00" />
+              <stop offset="100%" stop-color="#ffa94d" />
             </linearGradient>
           </defs>
           <circle
             class="progress-ring__bg"
-            stroke="rgba(255,255,255,0.1)"
-            stroke-width="12"
+            stroke="rgba(255,255,255,0.05)"
+            stroke-width="10"
             fill="transparent"
-            r="130"
-            cx="140"
-            cy="140"
+            r="100"
+            cx="110"
+            cy="110"
           />
           <circle
             class="progress-ring__circle"
             id="progressCircle"
             stroke="url(#gradientWork)"
-            stroke-width="12"
+            stroke-width="10"
             stroke-linecap="round"
             fill="transparent"
-            r="130"
-            cx="140"
-            cy="140"
-            style="filter: drop-shadow(0 0 10px rgba(255, 149, 0, 0.5))"
+            r="100"
+            cx="110"
+            cy="110"
+            style="filter: drop-shadow(0 0 10px rgba(255, 107, 53, 0.6))"
           />
         </svg>
         <div class="timer-content">
@@ -662,10 +696,35 @@
         functionalMove: "Ready Position",
         functionalPool: [],
         functionalHistory: [],
+        // Audio announcement tracking
+        announcedHalfway: false,
+        announced10Seconds: false,
       };
 
       let timerInterval = null;
       let audioContext = null;
+      let wakeLock = null;
+
+      // --- SCREEN WAKE LOCK ---
+      async function requestWakeLock() {
+        try {
+          if ("wakeLock" in navigator) {
+            wakeLock = await navigator.wakeLock.request("screen");
+            wakeLock.addEventListener("release", () => {
+              console.log("Wake Lock released");
+            });
+          }
+        } catch (err) {
+          console.log("Wake Lock error:", err);
+        }
+      }
+
+      function releaseWakeLock() {
+        if (wakeLock) {
+          wakeLock.release();
+          wakeLock = null;
+        }
+      }
 
       // --- DOM ELEMENTS ---
       const els = {
@@ -710,6 +769,21 @@
         els.headerBtn.addEventListener("click", () =>
           els.phaseSelector.classList.add("open")
         );
+
+        // Haptic feedback for all buttons
+        const allButtons = [
+          els.startBtn,
+          els.resetBtn,
+          els.skipBtn,
+          els.soundBtn,
+          els.headerBtn,
+        ];
+        allButtons.forEach((btn) => {
+          btn.addEventListener("mousedown", playButtonPress);
+          btn.addEventListener("touchstart", playButtonPress);
+          btn.addEventListener("mouseup", playButtonRelease);
+          btn.addEventListener("touchend", playButtonRelease);
+        });
       }
 
       // --- CORE LOGIC ---
@@ -746,6 +820,9 @@
           audioContext.resume();
         }
 
+        // Request wake lock to keep screen on
+        requestWakeLock();
+
         timerInterval = setInterval(tick, 1000);
       }
 
@@ -758,11 +835,13 @@
       function pauseTimer() {
         state.isRunning = false;
         clearInterval(timerInterval);
+        releaseWakeLock(); // Release wake lock when paused
         render();
       }
 
       function resetWorkout() {
         pauseTimer();
+        releaseWakeLock(); // Ensure wake lock is released
         state.currentPhase = 0;
         state.currentSet = 1;
         state.currentExercise = 0;
@@ -790,7 +869,31 @@
         if (phase.isFunctional && !state.isRest)
           handleFunctionalLogic(40 - state.timeLeft);
 
-        // Audio cues
+        // Enhanced audio announcements during WORK periods
+        if (!state.isRest && state.soundEnabled) {
+          // Halfway announcement
+          const halfwayPoint = Math.ceil(state.totalTime / 2);
+          if (
+            state.timeLeft === halfwayPoint &&
+            !state.announcedHalfway &&
+            state.totalTime >= 20
+          ) {
+            speak("Halfway there!", 1.2);
+            state.announcedHalfway = true;
+          }
+
+          // 10 seconds left announcement
+          if (
+            state.timeLeft === 10 &&
+            !state.announced10Seconds &&
+            state.totalTime >= 20
+          ) {
+            speak("10 seconds left!", 1.2);
+            state.announced10Seconds = true;
+          }
+        }
+
+        // Final countdown audio cues
         if (state.timeLeft <= 3 && state.timeLeft > 0) {
           playBeep(600, 0.1);
           if (state.timeLeft <= 3) speak(String(state.timeLeft));
@@ -861,8 +964,10 @@
         state.timeLeft = exercise.duration;
         state.totalTime = exercise.duration;
 
-        // Reset special states
+        // Reset special states and announcement flags
         state.functionalMove = "Ready Position";
+        state.announcedHalfway = false;
+        state.announced10Seconds = false;
         speak(exercise.name + ". Go!", 1.2);
         playBeep(1000, 0.4);
         render();
@@ -872,7 +977,20 @@
         state.isRest = true;
         state.timeLeft = duration;
         state.totalTime = duration;
+
+        // Announce rest period
         speak(msg || "Rest. Breathe.", 1.1);
+
+        // Announce next exercise after a brief pause
+        setTimeout(() => {
+          if (state.isRest && state.soundEnabled) {
+            const nextExerciseName = getNextExerciseName();
+            if (nextExerciseName) {
+              speak(`Get ready for ${nextExerciseName}`, 1.1);
+            }
+          }
+        }, 1500); // 1.5 second delay
+
         render();
       }
 
@@ -943,6 +1061,34 @@
         }
       }
 
+      // --- HELPER FUNCTIONS ---
+
+      function getNextExerciseName() {
+        const phase = workoutPhases[state.currentPhase];
+        if (!phase) return null;
+
+        // Don't announce for progressive or functional phases
+        if (phase.isProgressive || phase.isFunctional) return null;
+
+        // During rest, the next exercise is currentExercise + 1
+        const nextIdx = state.currentExercise + 1;
+
+        if (nextIdx < phase.exercises.length) {
+          return phase.exercises[nextIdx].name;
+        } else if (state.currentSet < phase.sets) {
+          // Next set, first exercise
+          return phase.exercises[0].name;
+        } else {
+          // Check if there's a next phase
+          const nextPhaseIdx = state.currentPhase + 1;
+          if (nextPhaseIdx < workoutPhases.length) {
+            return workoutPhases[nextPhaseIdx].exercises[0].name;
+          }
+        }
+
+        return null;
+      }
+
       // --- AUDIO ---
 
       function speak(text, rate = 1.0, force = false) {
@@ -979,6 +1125,69 @@
         playBeep(2000, 0.3);
       }
 
+      // --- HAPTIC FEEDBACK SOUNDS ---
+
+      function playButtonPress() {
+        if (!audioContext) return;
+
+        // Add vibration haptic
+        if ("vibrate" in navigator) {
+          navigator.vibrate(10); // Short 10ms vibration
+        }
+
+        // Soft bass "putt" sound for press
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+
+        // Deep bass frequency
+        osc.frequency.setValueAtTime(80, audioContext.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(
+          40,
+          audioContext.currentTime + 0.1
+        );
+
+        // Soft envelope
+        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+          0.01,
+          audioContext.currentTime + 0.15
+        );
+
+        osc.start(audioContext.currentTime);
+        osc.stop(audioContext.currentTime + 0.15);
+      }
+
+      function playButtonRelease() {
+        if (!audioContext) return;
+
+        // Higher "pop" sound for release
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+
+        // Mid-range frequency
+        osc.frequency.setValueAtTime(200, audioContext.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(
+          150,
+          audioContext.currentTime + 0.08
+        );
+
+        // Quick, soft pop
+        gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+          0.01,
+          audioContext.currentTime + 0.08
+        );
+
+        osc.start(audioContext.currentTime);
+        osc.stop(audioContext.currentTime + 0.08);
+      }
+
       function toggleSound() {
         state.soundEnabled = !state.soundEnabled;
         render();
@@ -1013,7 +1222,7 @@
           els.mainDisplay.className = "main-display rest";
           els.progressCircle.style.stroke = "url(#gradientRest)";
           els.progressCircle.style.filter =
-            "drop-shadow(0 0 10px rgba(48, 176, 199, 0.5))";
+            "drop-shadow(0 0 10px rgba(247, 127, 0, 0.6))";
         } else {
           els.timerLabel.innerText = "WORK";
           els.timerLabel.className = "timer-label work";
@@ -1021,7 +1230,7 @@
           els.mainDisplay.className = "main-display work";
           els.progressCircle.style.stroke = "url(#gradientWork)";
           els.progressCircle.style.filter =
-            "drop-shadow(0 0 10px rgba(255, 149, 0, 0.5))";
+            "drop-shadow(0 0 10px rgba(255, 107, 53, 0.6))";
         }
         // 3. Phase Badge
         const phase = workoutPhases[state.currentPhase];
@@ -1129,6 +1338,13 @@
             p.exercises.length
           } Exercises • ${p.sets} Set(s)</p>`;
           btn.onclick = () => jumpToPhase(idx);
+
+          // Add haptic feedback
+          btn.addEventListener("mousedown", playButtonPress);
+          btn.addEventListener("touchstart", playButtonPress);
+          btn.addEventListener("mouseup", playButtonRelease);
+          btn.addEventListener("touchend", playButtonRelease);
+
           list.appendChild(btn);
         });
       }
